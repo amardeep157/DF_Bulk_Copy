@@ -1,0 +1,29 @@
+{
+	"name": "ParquetDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"outputFile": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().outputFile",
+					"type": "Expression"
+				},
+				"folderPath": "Ingested_Tables/Dimension",
+				"fileSystem": "adlsgen2-container"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
