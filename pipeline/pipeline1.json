@@ -23,7 +23,17 @@
 					},
 					"dataset": {
 						"referenceName": "SqlServerTable_Dataset",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							},
+							"TableName": {
+								"value": "@pipeline().DataFactory",
+								"type": "Expression"
+							}
+						}
 					},
 					"firstRowOnly": false
 				}
