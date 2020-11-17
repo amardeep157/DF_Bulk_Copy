@@ -74,14 +74,6 @@
 							"typeProperties": {
 								"source": {
 									"type": "SqlServerSource",
-									"additionalColumns": [
-										{
-											"value": "$$COLUMN:undefined"
-										},
-										{
-											"value": "$$COLUMN:undefined"
-										}
-									],
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
@@ -96,6 +88,7 @@
 								},
 								"enableStaging": false,
 								"parallelCopies": 1,
+								"enableSkipIncompatibleRow": true,
 								"validateDataConsistency": true,
 								"translator": {
 									"type": "TabularTranslator",
