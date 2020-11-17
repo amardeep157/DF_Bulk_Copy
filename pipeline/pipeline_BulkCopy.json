@@ -1,6 +1,7 @@
 {
-	"name": "pipeline1",
+	"name": "pipeline_BulkCopy",
 	"properties": {
+		"description": "To copy Dimensions",
 		"activities": [
 			{
 				"name": "Lookup_TableNames",
@@ -94,6 +95,7 @@
 									}
 								},
 								"enableStaging": false,
+								"parallelCopies": 1,
 								"translator": {
 									"type": "TabularTranslator",
 									"typeConversion": true,
