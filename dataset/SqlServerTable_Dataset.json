@@ -21,7 +21,10 @@
 				"value": "@dataset().SchemaName",
 				"type": "Expression"
 			},
-			"table": " @dataset().TableName"
+			"table": {
+				"value": "@dataset().TableName",
+				"type": "Expression"
+			}
 		}
 	}
 }
