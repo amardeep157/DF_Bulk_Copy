@@ -53,7 +53,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Lookup_TableNames').output.value",
+						"value": "@{activity('Lookup_TableNames').output.value}",
 						"type": "Expression"
 					},
 					"isSequential": true,
