@@ -1,0 +1,24 @@
+{
+	"name": "trigger_Daily_Load",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline_BulkCopy",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 12,
+				"startTime": "2020-11-18T10:54:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
