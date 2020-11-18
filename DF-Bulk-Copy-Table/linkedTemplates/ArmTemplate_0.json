@@ -125,6 +125,45 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/JsonDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorageLinkedService",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"partitionName": {
+						"type": "string"
+					},
+					"TableDirectoryName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().partitionName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat('Ingested_Tables/Dimension_Partitioned','/',dataset().TableDirectoryName)",
+							"type": "Expression"
+						},
+						"fileSystem": "adlsgen2-container"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorageLinkedService')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SqlServerTable_Dataset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -292,6 +331,129 @@
 								}
 							]
 						}
+					},
+					{
+						"name": "Lookup_TableNames_Partitions",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT '[' + TABLE_SCHEMA + '].[' + TABLE_NAME + ']' As MyTableWithSchema\n, TABLE_SCHEMA As MySchema,\nTABLE_NAME As MyTable\nFROM INFORMATION_SCHEMA.TABLES\nWHERE TABLE_NAME LIKE 'Dim%'\n",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SqlServerTable_Dataset",
+								"type": "DatasetReference",
+								"parameters": {
+									"SchemaName": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									},
+									"TableName": {
+										"value": "@pipeline().DataFactory",
+										"type": "Expression"
+									}
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach_CopyTable_copy1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup_TableNames_Partitions",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup_TableNames_Partitions').output.value ",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data_EachTable_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"parallelCopies": 1,
+										"enableSkipIncompatibleRow": true,
+										"validateDataConsistency": true
+									},
+									"inputs": [
+										{
+											"referenceName": "SqlServerTable_Dataset",
+											"type": "DatasetReference",
+											"parameters": {
+												"SchemaName": {
+													"value": "@{item().MySchema}",
+													"type": "Expression"
+												},
+												"TableName": {
+													"value": "@{item().MyTable}",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "JsonDataset",
+											"type": "DatasetReference",
+											"parameters": {
+												"partitionName": {
+													"value": "@formatDateTime(utcnow(),'yyyyMMdd')\n\n",
+													"type": "Expression"
+												},
+												"TableDirectoryName": {
+													"value": "@concat(item().MySchema,'_',item().MyTable)",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
 					}
 				],
 				"concurrency": 1,
@@ -299,7 +461,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SqlServerTable_Dataset')]",
-				"[concat(variables('factoryId'), '/datasets/ParquetDataset')]"
+				"[concat(variables('factoryId'), '/datasets/ParquetDataset')]",
+				"[concat(variables('factoryId'), '/datasets/JsonDataset')]"
 			]
 		},
 		{
