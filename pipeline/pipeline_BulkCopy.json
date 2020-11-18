@@ -239,7 +239,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"partitionName": {
-											"value": "@formatDateTime(utcnow(),'yyyyMMdd')",
+											"value": "@formatDateTime(adddays(utcnow(),2),'yyyyMMdd')\n\n",
 											"type": "Expression"
 										},
 										"TableDirectoryName": {
