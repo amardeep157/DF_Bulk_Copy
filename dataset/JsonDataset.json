@@ -1,0 +1,34 @@
+{
+	"name": "JsonDataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorageLinkedService",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"partitionName": {
+				"type": "string"
+			},
+			"TableDirectoryName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().partitionName",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('Ingested_Tables/Dimension_Partitioned','/',dataset().TableDirectoryName)",
+					"type": "Expression"
+				},
+				"fileSystem": "adlsgen2-container"
+			}
+		},
+		"schema": {}
+	}
+}
