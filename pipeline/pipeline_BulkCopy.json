@@ -236,7 +236,17 @@
 							"outputs": [
 								{
 									"referenceName": "JsonDataset",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"partitionName": {
+											"value": "@formatDateTime(utcnow(),'yyyyMMdd')",
+											"type": "Expression"
+										},
+										"TableDirectoryName": {
+											"value": "@concat(item().MySchema,'_',item().MyTable)",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
