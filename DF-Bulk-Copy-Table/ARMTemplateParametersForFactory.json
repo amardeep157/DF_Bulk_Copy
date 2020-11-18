@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "DF-Bulk-Copy-Table"
+		},
+		"AzureDataLakeStorageLinkedService_accountKey": {
+			"value": ""
+		},
+		"SqlServerLinkedService_connectionString": {
+			"value": ""
+		},
+		"AzureDataLakeStorageLinkedService_properties_typeProperties_url": {
+			"value": "https://adls2amardeepstorage.dfs.core.windows.net"
+		},
+		"integrationRuntime-Shared_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/4f2eb37e-c352-4f99-a45c-7c915721c84f/resourcegroups/rg_BigData/providers/Microsoft.DataFactory/factories/DF-OnPremise-BLOB-Incremental/integrationruntimes/integrationRuntime-selftHosted-OnPremises"
+		}
+	}
+}
